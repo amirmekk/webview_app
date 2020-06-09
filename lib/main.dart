@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 void main() {
   runApp(MyApp());
@@ -27,6 +28,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   DateTime currentBackPressTime;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -41,16 +43,31 @@ class _MyHomePageState extends State<MyHomePage> {
       return Future.value(true);
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: WillPopScope(
-        onWillPop: _onBackButtonPressed,
-        child: WebView(
-            initialUrl: 'https://flutter.dev',
-            javascriptMode: JavascriptMode.unrestricted,
-            onWebViewCreated: (WebViewController controller) {}),
+    return SafeArea(
+      child: Scaffold(
+        // appBar: AppBar(
+        //   title: Text(widget.title),
+        // ),
+        body: WillPopScope(
+          onWillPop: _onBackButtonPressed,
+          child: ModalProgressHUD(
+            inAsyncCall: _isLoading,
+            child: WebView(
+              onPageStarted: (url) {
+                setState(() {
+                  _isLoading = true;
+                });
+              },
+              onPageFinished: (url) {
+                setState(() {
+                  _isLoading = false;
+                });
+              },
+              initialUrl: 'https://flutter.dev',
+              javascriptMode: JavascriptMode.unrestricted,
+            ),
+          ),
+        ),
       ),
     );
   }
