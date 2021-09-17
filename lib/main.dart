@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,16 +17,16 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, this.title}) : super(key: key);
 
-  final String title;
+  final String? title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  DateTime currentBackPressTime;
+  DateTime? currentBackPressTime;
   bool _isLoading = false;
 
   @override
@@ -35,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Future<bool> _onBackButtonPressed() {
       DateTime now = DateTime.now();
       if (currentBackPressTime == null ||
-          now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+          now.difference(currentBackPressTime!) > Duration(seconds: 2)) {
         currentBackPressTime = now;
         Fluttertoast.showToast(msg: 'Press the back button again to exit');
         return Future.value(false);
@@ -50,22 +49,19 @@ class _MyHomePageState extends State<MyHomePage> {
         // ),
         body: WillPopScope(
           onWillPop: _onBackButtonPressed,
-          child: ModalProgressHUD(
-            inAsyncCall: _isLoading,
-            child: WebView(
-              onPageStarted: (url) {
-                setState(() {
-                  _isLoading = true;
-                });
-              },
-              onPageFinished: (url) {
-                setState(() {
-                  _isLoading = false;
-                });
-              },
-              initialUrl: 'https://flutter.dev',
-              javascriptMode: JavascriptMode.unrestricted,
-            ),
+          child: WebView(
+            onPageStarted: (url) {
+              setState(() {
+                _isLoading = true;
+              });
+            },
+            onPageFinished: (url) {
+              setState(() {
+                _isLoading = false;
+              });
+            },
+            initialUrl: 'https://flutter.dev',
+            javascriptMode: JavascriptMode.unrestricted,
           ),
         ),
       ),
